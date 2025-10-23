@@ -9,13 +9,13 @@ const apiKey = process.env.API_KEY;
 const apiSecret = process.env.API_SECRET;
 
 // Query Parameters
-const params = {"rows":"20","page":"1"};
+const params = { "rows": "100", "page": "1" };
 const queryParams = new URLSearchParams(params).toString();
 
 // Create the HMAC SHA-256 signature
 const signature = crypto
   .createHmac('sha256', apiSecret)
-  .update( JSON.stringify(params) )
+  .update(JSON.stringify(params))
   .digest('hex');
 
 // Define headers
@@ -27,7 +27,9 @@ const headers = {
 // Send the GET request
 axios.get(`https://api.tylt.money/transactions/merchant/getPayinTransactionHistory?${queryParams}`, { headers })
   .then(response => {
-    console.log("Response:", response.data);
+    const result = response.data.data.filter(item => item.status !== 'Expired')
+    console.log("Response:", result);
+    console.log("rows:", result.length);
   })
   .catch(error => {
     console.error('Error:', error);
